@@ -1,11 +1,11 @@
 import React from "react";
 
-const Input = ({...rest}) => {
+const Input = ({ ...rest }) => {
   return (
     <input
       {...rest}
       placeholder="Add a new task"
-      className="w-9/12 h-3/4 p-5 text-2xl text-blue-600 outline-none bg-gray-400/40 placeholder:text-blue-400 rounded-md"
+      className="w-9/12 h-3/4 p-5 text-xl text-[#F5F5F5] outline-none bg-[#B22222] shadow-xl placeholder:text-[#F5F5F5] rounded-md"
     />
   );
 };

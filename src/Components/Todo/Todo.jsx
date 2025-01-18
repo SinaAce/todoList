@@ -5,9 +5,8 @@ import Tasks from './Tasks/Tasks';
 const Todo = () => {
   
   return (
-    <div className="bg-gray-100 rounded-xl shadow-xl">
+    <div className="bg-[#2C6B56] rounded-xl shadow-2xl">
       <Header />
-      <Form />
       <Tasks />
     </div>
   );
