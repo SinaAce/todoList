@@ -2,22 +2,33 @@ import { Controller, useForm } from "react-hook-form";
 import axios from "axios";
 
 const Form = ({ onTaskAdded }) => {
-  const { control, handleSubmit, reset } = useForm(); // اضافه کردن reset
+  const { control, handleSubmit, reset } = useForm();
 
   const onSubmit = async (data) => {
     try {
       const res = await axios.post(
         "https://668a8cba2c68eaf3211d1e6e.mockapi.io/list/task",
         {
-          name: data?.title, // ارسال نام تسک جدید
+          name: data?.title,
         }
       );
       if (res.status === 201) {
-        onTaskAdded(); // به‌روزرسانی لیست تسک‌ها
-        reset(); // خالی کردن مقدار فیلدهای فرم
+        // داده‌ی تسک جدید
+        const newTask = res.data;
+
+        // ذخیره‌سازی تسک جدید در LocalStorage
+        const storedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        storedTasks.push(newTask);
+        localStorage.setItem("tasks", JSON.stringify(storedTasks));
+
+        // بروزرسانی وضعیت در کامپوننت والد
+        onTaskAdded();
+
+        // ریست کردن فرم
+        reset();
       }
     } catch (error) {
-      console.error(error);
+      console.error("Error submitting the task:", error);
     }
   };
 

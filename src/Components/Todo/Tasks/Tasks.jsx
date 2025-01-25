@@ -2,38 +2,44 @@ import { useEffect, useState } from "react";
 import GetAllData from "../../../Core/Api/GetAllData/GetAllData";
 import DeleteData from "../../../Core/Api/DeleteData";
 import Form from "../Form/Form";
-import moment, { locale } from "jalali-moment";
+import moment from "jalali-moment";
 
 const Tasks = () => {
   const [allTask, setTask] = useState([]);
   const [search, setSearch] = useState("");
 
   const data = async () => {
-    const result = await GetAllData();
-    const tasksWithLabels = result?.data.map((task) => ({
-      ...task,
-      label: "تسک عادی",
-    }));
-    setTask(tasksWithLabels);
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      const res = await DeleteData(id);
-      if (res?.status === 200 || res?.success) {
-        setTask((prevTasks) => prevTasks.filter((task) => task.id !== id));
-      }
-    } catch (error) {
-      console.error("Error deleting task:", error);
+    // بررسی وجود تسک‌ها در LocalStorage
+    const storedTasks = JSON.parse(localStorage.getItem("tasks"));
+    if (storedTasks) {
+      setTask(storedTasks);
+    } else {
+      const result = await GetAllData();
+      const tasksWithLabels = result?.data.map((task) => ({
+        ...task,
+        label: "تسک عادی",
+      }));
+      setTask(tasksWithLabels);
+      localStorage.setItem("tasks", JSON.stringify(tasksWithLabels));
     }
   };
 
+  const handleDelete = (id) => {
+    setTask((prevTasks) => {
+      const updatedTasks = prevTasks.filter((task) => task.id !== id);
+      localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+      return updatedTasks;
+    });
+  };
+
   const handleLabelChange = (id, newLabel) => {
-    setTask((prevTasks) =>
-      prevTasks.map((task) =>
+    setTask((prevTasks) => {
+      const updatedTasks = prevTasks.map((task) =>
         task.id === id ? { ...task, label: newLabel } : task
-      )
-    );
+      );
+      localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+      return updatedTasks;
+    });
   };
 
   const changeDate = (date) => {
@@ -45,7 +51,6 @@ const Tasks = () => {
   useEffect(() => {
     data();
   }, []);
-  
 
   return (
     <>
