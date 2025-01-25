@@ -2,14 +2,19 @@ import { useEffect, useState } from "react";
 import GetAllData from "../../../Core/Api/GetAllData/GetAllData";
 import DeleteData from "../../../Core/Api/DeleteData";
 import Form from "../Form/Form";
+import moment, { locale } from "jalali-moment";
 
 const Tasks = () => {
   const [allTask, setTask] = useState([]);
   const [search, setSearch] = useState("");
 
-  const fetchTasks = async () => {
+  const data = async () => {
     const result = await GetAllData();
-    setTask(result?.data);
+    const tasksWithLabels = result?.data.map((task) => ({
+      ...task,
+      label: "تسک عادی",
+    }));
+    setTask(tasksWithLabels);
   };
 
   const handleDelete = async (id) => {
@@ -23,13 +28,28 @@ const Tasks = () => {
     }
   };
 
+  const handleLabelChange = (id, newLabel) => {
+    setTask((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === id ? { ...task, label: newLabel } : task
+      )
+    );
+  };
+
+  const changeDate = (date) => {
+    return moment(date, "YYYY-MM-DDTHH:mm:ssZ")
+      .local("fa")
+      .format("jYYYY/jMM/jDD");
+  };
+
   useEffect(() => {
-    fetchTasks();
+    data();
   }, []);
+  
 
   return (
     <>
-      <Form onTaskAdded={fetchTasks} />
+      <Form onTaskAdded={data} />
       <input
         type="search"
         className="w-7/12 ml-10 h-11 rounded-md p-3 text-[#B22222] shadow-xl outline-none mb-10 mt-3 placeholder:text-[#B22222]"
@@ -56,7 +76,21 @@ const Tasks = () => {
               <p className="text-lg text-[#FAFAFA] font-semibold">
                 {value.name}
               </p>
-              <p className="text-sm text-[#F0F0F0]">{value.createdAt}</p>
+              <p className="text-sm text-[#F0F0F0]">
+                {changeDate(value.createdAt)}
+              </p>
+              <select
+                value={value.label}
+                onChange={(e) => handleLabelChange(value.id, e.target.value)}
+                className="text-sm text-[#333333] bg-[#FFD700] p-1 rounded-md opacity-80 outline-none"
+              >
+                <option value="تسک عادی">تسک عادی</option>
+                <option value="مهم">مهم</option>
+                <option value="رویداد">رویداد</option>
+              </select>
+              <p className="text-sm text-[#FFD700] font-medium">
+                {value.label}
+              </p>
               <button
                 onClick={() => handleDelete(value.id)}
                 className="bg-[#B22222] text-[#FAFAFA] w-10 h-10 absolute shadow-xl right-5 rounded-full"

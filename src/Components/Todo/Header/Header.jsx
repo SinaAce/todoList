@@ -9,7 +9,7 @@ const Header = () => {
           <h3 className="text-[22px] text-right font-semibold text-[#FAFAFA]">Today</h3>
           <h6 className="text-[#F0F0F0]">17 Feb 2024</h6>
         </div>
-        <RiCalendarTodoFill className="size-16 text-[#B22222]" />
+        <RiCalendarTodoFill className="size-16 text-[#FFD700]" />
       </div>
     </div>
   );
